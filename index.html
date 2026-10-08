@@ -196,6 +196,15 @@ col.final{background:var(--green-soft)}
 .pdfbtn{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 13px;background:transparent;color:var(--green-ink);border:1px solid rgba(255,255,255,.55);border-radius:4px;cursor:pointer;font-size:.95rem}
 .pdfbtn:hover{background:rgba(255,255,255,.14)}
 .printsum{display:none}
+.scalechart{display:none}
+.scalechart h2{margin-bottom:10px}
+.scalegrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.scalegrid div{display:flex;justify-content:space-between;gap:6px;padding:5px 8px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:11.5px}
+.scalegrid span{color:var(--muted);text-transform:capitalize}
+.scalegrid .fix{background:var(--green-soft)}
+.scalegrid .now{background:var(--green);color:#fff}
+.scalegrid .now span{color:#fff}
+.scalegrid .next{background:var(--red-soft);box-shadow:inset 3px 0 0 var(--red)}
 @media print{
   @page{size:A4;margin:12mm}
   :root:root:root{
@@ -219,6 +228,8 @@ col.final{background:var(--green-soft)}
   .printsum span{display:inline-block;margin-right:18px}
   .ledger-scroll{display:block!important;overflow:visible}
   .periods{display:none!important}
+  .notes{display:none!important}
+  .scalechart{display:block}
   table{font-size:10.5px}
 }
 .pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px}
@@ -466,6 +477,7 @@ col.final{background:var(--green-soft)}
       </div>
     </div>
 
+    <div class="block scalechart" id="scaleChart"></div>
     <div class="block notes">
       <h2 data-t="h_notes"></h2>
       <p class="warn" data-t="warn" style="margin-bottom:14px"></p>
@@ -596,7 +608,7 @@ function compute(s){
   function bfOf(b){ return s.bf ? Math.min(Math.round(b*s.bfRate/100), s.bfCap>0?s.bfCap:Infinity) : 0; }
   r.arrExtra = r.b1 - s.paidBasic;
   /* House rent is frozen at the 30 June 2026 amount until 31 December 2027, but in
-     July and August the office paid it on the old scale basic after the 1 July
+     July to September the office paid it on the old scale basic after the 1 July
      increment. Under the 2015 slabs that usually lands high, so the extra has to
      come back out of the arrears. At a slab boundary the rate drops 5 points and
      the floor does not always cover it, so house rent fell and a little more is
@@ -623,7 +635,7 @@ var STR={
 en:{
  title:"Pay Scale 2026 salary calculator",
  sub:"Works out your new basic pay, the staged rollout and your allowances, following the Services (Pay and Allowances) Order, 2026 (SRO No. 347, Bangladesh Gazette, 17 September 2026).",
- pdf:"Download PDF", th_light:"Switch to light mode", th_dark:"Switch to dark mode",
+ pdf:"Download PDF", h_scale:"New pay scale 2026", th_light:"Switch to light mode", th_dark:"Switch to dark mode",
  h_pay:"Your pay on 30 June 2026", l_grade:"Pay scale you draw", hint_grade:"If you hold a higher grade, selection grade or time scale, choose the scale you actually draw.",
  l_basic:"Basic pay on 30 June 2026", hint_fixed:"Filled in from the 2015 order. Change it if your payslip differs.",
  l_inc:"Add the annual increment of 1 July 2026", hint_inc:"Clause 9. A new joiner needs at least 6 months of qualifying service.",
@@ -645,7 +657,7 @@ en:{
  h_fix:"How your new basic pay is fixed", h_stairs:"Your place on the new scale", h_ledger:"Month by month",
  ledger_note:"Deductions shown: provident fund, benevolent fund, revenue stamp, income tax and your loan deductions. Group insurance is not included.",
  h_items:"Allowances from January 2028, item by item", none_items:"No other allowances selected",
- h_arrear:"Arrears", arrear_note:"Arrears run from 1 July 2026 to the date the order was issued. Whether September is included depends on when your office started paying the new rate.",
+ h_arrear:"Arrears", arrear_note:"Arrears are counted for three months, July to September 2026. If your office started the new rate later, add the net amount once more for each extra month.",
  h_year:"Once a year, from 2028", year_note:"Until 31 December 2027 these stay at the amounts you got under your June 2026 basic pay.",
  h_notes:"What this calculator assumes",
  warn:"This is an unofficial tool. Your official pay is fixed online in iBAS++ at ibas.finance.gov.bd or payfixation.gov.bd and approved by your accounts office (clause 32).",
@@ -661,8 +673,8 @@ en:{
  res_fix:"Fixed step", res_new:"New basic pay, 1 July 2026", res_raise:"Raise over old basic pay", res_27:"Basic pay from 1 July 2027",
  lg_fix:"Step your pay is fixed at", lg_now:"After the 1 July 2026 increment", lg_next:"After the 1 July 2027 increment", stairs_aria:"Steps of the new scale with your position marked",
  ar_due:"Basic pay due for the month", ar_paid:"Basic pay already paid", ar_gpf:"Provident fund on the arrears", ar_bf:"Benevolent fund on the arrears",
- l_paid:"Basic pay your office actually paid in July and August 2026", hint_paid:"Filled in with your old scale pay after the usual 1 July increment. Change it to match your payslip.", l_arrDed:"Also take provident fund and benevolent fund from the arrears",
- ar_month:"Extra basic pay per month", ar_sp:"Special benefit already drawn per month", ar_hrx:"Extra house rent already drawn per month", ar_hrs:"House rent short paid per month", ar_net:"Net arrears per month", ar_two:"July and August 2026 together",
+ l_paid:"Basic pay your office actually paid from July to September 2026", hint_paid:"Filled in with your old scale pay after the usual 1 July increment. Change it to match your payslip.", l_arrDed:"Also take provident fund and benevolent fund from the arrears",
+ ar_month:"Extra basic pay per month", ar_sp:"Special benefit already drawn per month", ar_hrx:"Extra house rent already drawn per month", ar_hrs:"House rent short paid per month", ar_net:"Net arrears per month", ar_two:"July to September 2026 together",
  y_fest:"Two festival allowances", y_nab:"Bangla New Year allowance, 15% of basic pay",
  grade:"Grade", g1:"Grade 1, fixed pay", gSS:"Senior Secretary and equivalent, fixed pay", gCS:"Cabinet Secretary, Principal Secretary and equivalent, fixed pay", step:"step",
  hr_pct:"of basic pay"
@@ -670,7 +682,7 @@ en:{
 bn:{
  title:"জাতীয় বেতনস্কেল ২০২৬ বেতন হিসাব",
  sub:"চাকরি (বেতন ও ভাতাদি) আদেশ, ২০২৬ (এস. আর. ও. নং ৩৪৭, বাংলাদেশ গেজেট, ১৭ সেপ্টেম্বর ২০২৬) অনুযায়ী আপনার নতুন মূল বেতন, ধাপে ধাপে বাস্তবায়ন এবং ভাতা হিসাব করে।",
- pdf:"পিডিএফ ডাউনলোড", th_light:"লাইট মোডে যান", th_dark:"ডার্ক মোডে যান",
+ pdf:"পিডিএফ ডাউনলোড", h_scale:"নতুন বেতনস্কেল ২০২৬", th_light:"লাইট মোডে যান", th_dark:"ডার্ক মোডে যান",
  h_pay:"৩০ জুন ২০২৬ তারিখে আপনার বেতন", l_grade:"আপনি যে বেতনস্কেলে বেতন পান", hint_grade:"উচ্চতর গ্রেড, সিলেকশন গ্রেড বা টাইম স্কেল পেয়ে থাকলে যে স্কেলে বাস্তবে বেতন পান সেটি বাছুন।",
  l_basic:"৩০ জুন ২০২৬ তারিখের মূল বেতন", hint_fixed:"২০১৫ সালের আদেশ অনুযায়ী বসানো হয়েছে। আপনার বেতন বিবরণীতে ভিন্ন হলে বদলে দিন।",
  l_inc:"১ জুলাই ২০২৬ এর বার্ষিক বেতনবৃদ্ধি যোগ করুন", hint_inc:"অনুচ্ছেদ ৯। নতুন যোগদানকারীর কোয়ালিফাইং চাকরি কমপক্ষে ৬ মাস হতে হবে।",
@@ -692,7 +704,7 @@ bn:{
  h_fix:"নতুন মূল বেতন যেভাবে নির্ধারিত হয়", h_stairs:"নতুন স্কেলে আপনার ধাপ", h_ledger:"মাসভিত্তিক হিসাব",
  ledger_note:"যে কর্তন দেখানো হয়েছে: ভবিষ্য তহবিল, কল্যাণ তহবিল, রেভিনিউ স্ট্যাম্প, আয়কর ও আপনার ঋণের কিস্তি। যৌথ বীমা ধরা হয়নি।",
  h_items:"জানুয়ারি ২০২৮ থেকে ভাতা, খাত অনুযায়ী", none_items:"অন্য কোনও ভাতা বাছা হয়নি",
- h_arrear:"বকেয়া", arrear_note:"বকেয়া ১ জুলাই ২০২৬ থেকে আদেশ জারির তারিখ পর্যন্ত। সেপ্টেম্বর ধরা হবে কি না তা নির্ভর করে আপনার অফিস কবে থেকে নতুন হারে বেতন দিয়েছে তার উপর।",
+ h_arrear:"বকেয়া", arrear_note:"বকেয়া তিন মাসের ধরা হয়েছে, জুলাই থেকে সেপ্টেম্বর ২০২৬। আপনার অফিস নতুন হার পরে চালু করলে প্রতিটি বাড়তি মাসের জন্য নিট অঙ্কটি আরেকবার যোগ করুন।",
  h_year:"বছরে একবার, ২০২৮ থেকে", year_note:"৩১ ডিসেম্বর ২০২৭ পর্যন্ত এগুলো জুন ২০২৬ এর মূল বেতন অনুযায়ী পাওয়া অঙ্কেই থাকবে।",
  h_notes:"এই হিসাবে যা ধরে নেওয়া হয়েছে",
  warn:"এটি একটি অনানুষ্ঠানিক টুল। আপনার বেতন দাপ্তরিকভাবে iBAS++ এ (ibas.finance.gov.bd বা payfixation.gov.bd) অনলাইনে নির্ধারিত হয় এবং হিসাবরক্ষণ অফিস তা অনুমোদন করে (অনুচ্ছেদ ৩২)।",
@@ -708,8 +720,8 @@ bn:{
  res_fix:"নির্ধারিত ধাপ", res_new:"নতুন মূল বেতন, ১ জুলাই ২০২৬", res_raise:"পুরনো মূল বেতনের চেয়ে বৃদ্ধি", res_27:"১ জুলাই ২০২৭ থেকে মূল বেতন",
  lg_fix:"যে ধাপে বেতন নির্ধারিত হয়", lg_now:"১ জুলাই ২০২৬ এর বেতনবৃদ্ধির পর", lg_next:"১ জুলাই ২০২৭ এর বেতনবৃদ্ধির পর", stairs_aria:"নতুন স্কেলের ধাপসমূহ, আপনার অবস্থান চিহ্নিত",
  ar_due:"ওই মাসের প্রাপ্য মূল বেতন", ar_paid:"ইতোমধ্যে পাওয়া মূল বেতন", ar_gpf:"বকেয়ার উপর ভবিষ্য তহবিল", ar_bf:"বকেয়ার উপর কল্যাণ তহবিল",
- l_paid:"জুলাই ও আগস্ট ২০২৬ এ অফিস বাস্তবে যে মূল বেতন দিয়েছে", hint_paid:"পুরনো স্কেলে ১ জুলাইয়ের স্বাভাবিক বেতনবৃদ্ধির পরের অঙ্ক বসানো আছে। আপনার বেতন বিবরণী অনুযায়ী বদলে নিন।", l_arrDed:"বকেয়ার উপরও ভবিষ্য তহবিল ও কল্যাণ তহবিল কাটুন",
- ar_month:"প্রতি মাসে বাড়তি মূল বেতন", ar_sp:"প্রতি মাসে ইতোমধ্যে নেওয়া বিশেষ সুবিধা", ar_hrx:"প্রতি মাসে ইতোমধ্যে নেওয়া বাড়তি বাড়ি ভাড়া", ar_hrs:"প্রতি মাসে কম পাওয়া বাড়ি ভাড়া", ar_net:"প্রতি মাসে নিট বকেয়া", ar_two:"জুলাই ও আগস্ট ২০২৬ মিলিয়ে",
+ l_paid:"জুলাই থেকে সেপ্টেম্বর ২০২৬ এ অফিস বাস্তবে যে মূল বেতন দিয়েছে", hint_paid:"পুরনো স্কেলে ১ জুলাইয়ের স্বাভাবিক বেতনবৃদ্ধির পরের অঙ্ক বসানো আছে। আপনার বেতন বিবরণী অনুযায়ী বদলে নিন।", l_arrDed:"বকেয়ার উপরও ভবিষ্য তহবিল ও কল্যাণ তহবিল কাটুন",
+ ar_month:"প্রতি মাসে বাড়তি মূল বেতন", ar_sp:"প্রতি মাসে ইতোমধ্যে নেওয়া বিশেষ সুবিধা", ar_hrx:"প্রতি মাসে ইতোমধ্যে নেওয়া বাড়তি বাড়ি ভাড়া", ar_hrs:"প্রতি মাসে কম পাওয়া বাড়ি ভাড়া", ar_net:"প্রতি মাসে নিট বকেয়া", ar_two:"জুলাই থেকে সেপ্টেম্বর ২০২৬ মিলিয়ে",
  y_fest:"দুটি উৎসব ভাতা", y_nab:"বাংলা নববর্ষ ভাতা, মূল বেতনের ১৫%",
  grade:"গ্রেড", g1:"গ্রেড ১, নির্ধারিত বেতন", gSS:"সিনিয়র সচিব ও সমমর্যাদা, নির্ধারিত বেতন", gCS:"মন্ত্রিপরিষদ সচিব, মুখ্য সচিব ও সমমর্যাদা, নির্ধারিত বেতন", step:"ধাপ",
  hr_pct:"মূল বেতনের"
@@ -722,7 +734,7 @@ en:[
  "The new house rent rate goes by the grade of the scale you draw: 60, 50 or 45 percent for grades 16 to 20, down to 40, 30 or 25 percent for grade 4 and above (clause 15).",
  "The provident fund cut is your chosen percent of the basic pay paid in each period, rounded to the nearest taka. Clause 7 points to a separate Finance Division memo of 2 September 2026 for GPF rules, which is not part of this gazette.",
  "The benevolent fund rate and the Tk 10 revenue stamp are not part of this gazette. They come from your own entries, so check them against your payslip.",
- "Arrears compare the staged new basic pay with what your office already paid for July and August, taken as your old scale pay after the usual 1 July increment. The gazette does not say whether provident fund or benevolent fund is taken from arrears, so that is a switch you control. House rent is also settled: it stays at the 30 June 2026 amount until 31 December 2027, so any rise the office paid on the incremented old scale basic is taken back, and where a slab boundary made it fall the shortfall is added. Other allowances are not adjusted.",
+ "Arrears compare the staged new basic pay with what your office already paid for July to September, taken as your old scale pay after the usual 1 July increment. The gazette does not say whether provident fund or benevolent fund is taken from arrears, so that is a switch you control. House rent is also settled: it stays at the 30 June 2026 amount until 31 December 2027, so any rise the office paid on the incremented old scale basic is taken back, and where a slab boundary made it fall the shortfall is added. Other allowances are not adjusted.",
  "The order does not say how to round a half taka in the staged amounts, so they are shown as calculated.",
  "Not covered by the order: judicial service, defence services, police and BGB, state industry workers, apprentices, trainees, outsourced, daily basis, contract and part time staff (clause 1(4)).",
  "Pensioners are handled by a separate table in clause 8 and are not part of this calculator."
@@ -734,7 +746,7 @@ bn:[
  "নতুন বাড়ি ভাড়ার হার স্কেলের গ্রেড অনুযায়ী: গ্রেড ১৬ থেকে ২০ এর জন্য ৬০, ৫০ বা ৪৫ শতাংশ, আর গ্রেড ৪ ও তদূর্ধ্বের জন্য ৪০, ৩০ বা ২৫ শতাংশ (অনুচ্ছেদ ১৫)।",
  "ভবিষ্য তহবিল কর্তন হলো প্রতিটি সময়ে প্রদত্ত মূল বেতনের উপর আপনার বাছাই করা শতাংশ, নিকটতম টাকায়। জিপিএফ এর নিয়মের জন্য অনুচ্ছেদ ৭ অর্থ বিভাগের ২ সেপ্টেম্বর ২০২৬ এর আলাদা স্মারকের কথা বলেছে, যা এই গেজেটে নেই।",
  "কল্যাণ তহবিলের হার ও ১০ টাকার রেভিনিউ স্ট্যাম্প এই গেজেটের অংশ নয়। এগুলো আপনার দেওয়া তথ্য অনুযায়ী ধরা হয়েছে, তাই বেতন বিবরণীর সঙ্গে মিলিয়ে নিন।",
- "বকেয়া হিসাবে ধাপ অনুযায়ী প্রাপ্য নতুন মূল বেতনের সঙ্গে জুলাই ও আগস্টে অফিস যা দিয়েছে তার তুলনা করা হয়েছে, যা পুরনো স্কেলে ১ জুলাইয়ের স্বাভাবিক বেতনবৃদ্ধির পরের মূল বেতন ধরা হয়েছে। বকেয়ার উপর ভবিষ্য তহবিল বা কল্যাণ তহবিল কাটবে কি না গেজেটে বলা নেই, তাই সেটা আপনার হাতে একটা সুইচ হিসেবে রাখা হয়েছে। বাড়ি ভাড়াও সমন্বয় করা হয়েছে: ৩১ ডিসেম্বর ২০২৭ পর্যন্ত এটি ৩০ জুন ২০২৬ এর অঙ্কে থাকবে, তাই বেতনবৃদ্ধির পরের পুরনো মূল বেতনের উপর অফিস যতটুকু বেশি দিয়েছে তা ফেরত নেওয়া হয়েছে, আর স্ল্যাব বদলের কারণে যেখানে কমে গেছে সেখানে ঘাটতি যোগ করা হয়েছে। অন্য ভাতা সমন্বয় করা হয়নি।",
+ "বকেয়া হিসাবে ধাপ অনুযায়ী প্রাপ্য নতুন মূল বেতনের সঙ্গে জুলাই থেকে সেপ্টেম্বরে অফিস যা দিয়েছে তার তুলনা করা হয়েছে, যা পুরনো স্কেলে ১ জুলাইয়ের স্বাভাবিক বেতনবৃদ্ধির পরের মূল বেতন ধরা হয়েছে। বকেয়ার উপর ভবিষ্য তহবিল বা কল্যাণ তহবিল কাটবে কি না গেজেটে বলা নেই, তাই সেটা আপনার হাতে একটা সুইচ হিসেবে রাখা হয়েছে। বাড়ি ভাড়াও সমন্বয় করা হয়েছে: ৩১ ডিসেম্বর ২০২৭ পর্যন্ত এটি ৩০ জুন ২০২৬ এর অঙ্কে থাকবে, তাই বেতনবৃদ্ধির পরের পুরনো মূল বেতনের উপর অফিস যতটুকু বেশি দিয়েছে তা ফেরত নেওয়া হয়েছে, আর স্ল্যাব বদলের কারণে যেখানে কমে গেছে সেখানে ঘাটতি যোগ করা হয়েছে। অন্য ভাতা সমন্বয় করা হয়নি।",
  "ধাপে ধাপে প্রদেয় অঙ্কে আধা টাকা কীভাবে পূর্ণ করা হবে তা আদেশে বলা নেই, তাই হিসাব যেমন এসেছে তেমনই দেখানো হয়েছে।",
  "এই আদেশের বাইরে: জুডিসিয়াল সার্ভিস, প্রতিরক্ষা সার্ভিস, পুলিশ ও বিজিবি, রাষ্ট্রায়ত্ত শিল্পের শ্রমিক, শিক্ষানবিশ, প্রশিক্ষণার্থী, আউটসোর্সিং, দৈনিক ভিত্তিক, চুক্তিভিত্তিক ও খণ্ডকালীন কর্মী (অনুচ্ছেদ ১(৪))।",
  "পেনশনভোগীদের হিসাব অনুচ্ছেদ ৮ এর আলাদা সারণি অনুযায়ী হয়, যা এই ক্যালকুলেটরে নেই।"
@@ -814,6 +826,15 @@ function render(){
   $("printSum").innerHTML='<span>'+esc(T("l_grade"))+': <b>'+esc(optText("grade"))+'</b></span>'+
     '<span>'+esc(T("l_basic"))+': <b>'+tk(s.oldBasic)+'</b></span>'+
     '<span>'+esc(T("l_loc"))+': <b>'+esc(optText("loc"))+'</b></span>';
+  /* PDF only: the new scale for the grade being calculated, with the
+     fixed step, the step after the 2026 increment and the 2027 step marked. */
+  var sc='<h2>'+esc(T("h_scale"))+': '+esc(optText("grade"))+'</h2><div class="scalegrid">';
+  if(r.fixedPost) sc+='<div class="now"><span>'+esc(T("lg_fix"))+'</span><b>'+tk(r.N)+'</b></div>';
+  else NEW[g].forEach(function(v,i){
+    var c = i===r.idxN ? "now" : (i===r.idx27 && r.idx27!==r.idxN) ? "next" : (i===r.f.idx) ? "fix" : "";
+    sc+='<div class="'+c+'"><span>'+esc(T("step"))+' '+num(i+1)+'</span><b>'+tk(v)+'</b></div>';
+  });
+  $("scaleChart").innerHTML=sc+'</div>';
 
   /* working */
   var w=[];
@@ -926,7 +947,7 @@ function render(){
   if(r.arrGpf>0) a+='<div><span>'+esc(T("ar_gpf"))+' ('+num(s.gpf)+'%)</span><b>− '+tk(r.arrGpf)+'</b></div>';
   if(r.arrBf>0) a+='<div><span>'+esc(T("ar_bf"))+'</span><b>− '+tk(r.arrBf)+'</b></div>';
   if(s.special>0||r.arrHR!==0||r.arrGpf>0||r.arrBf>0) a+='<div><span>'+esc(T("ar_net"))+'</span><b>'+tk(r.arrearMonth)+'</b></div>';
-  a+='<div><span>'+esc(T("ar_two"))+'</span><b>'+tk(r.arrearMonth*2)+'</b></div>';
+  a+='<div><span>'+esc(T("ar_two"))+'</span><b>'+tk(r.arrearMonth*3)+'</b></div>';
   $("arrear").innerHTML=a;
   $("yearly").innerHTML='<div><span>'+esc(T("y_fest"))+'</span><b>'+tk(r.N27*2)+'</b></div><div><span>'+esc(T("y_nab"))+'</span><b>'+tk(Math.round(r.N27*0.15))+'</b></div>';
 }
