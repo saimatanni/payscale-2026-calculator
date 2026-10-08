@@ -530,7 +530,10 @@ function compute(s){
   }
   r.D=r.N-s.oldBasic;
   var p=phasePct(s.grade); r.p=p;
-  r.b1=s.oldBasic+p[0]*r.D; r.b2=s.oldBasic+p[1]*r.D;
+  /* Only the fixation gap is staged. The 1 July 2026 increment is added in
+     full on top, once, and is not added again in the second stage. */
+  r.gap=r.fix-s.oldBasic; r.inc=r.N-r.fix;
+  r.b1=s.oldBasic+p[0]*r.gap+r.inc; r.b2=s.oldBasic+p[1]*r.gap+r.inc;
   var g=parseInt(s.grade,10); if(isNaN(g)) g=1;
   var low = g>=11;
   var items=[];
@@ -803,8 +806,10 @@ function render(){
         : (L ? "আপনি স্কেলের শেষ ধাপে আছেন, তাই আর বেতনবৃদ্ধি নেই।" : "You are on the last step of the scale, so there is no further increment."));
     }
   }
-  w.push(L ? "বৃদ্ধি "+tk(r.D)+" ধাপে ধাপে দেওয়া হবে: ডিসেম্বর ২০২৬ পর্যন্ত "+num(r.p[0]*100)+"%, জুন ২০২৭ পর্যন্ত "+num(r.p[1]*100)+"%, ১ জুলাই ২০২৭ থেকে ১০০%।"
-           : "The raise of "+tk(r.D)+" is paid in stages: "+num(r.p[0]*100)+"% until December 2026, "+num(r.p[1]*100)+"% until June 2027, and 100% from 1 July 2027.");
+  w.push(L ? "নির্ধারিত বেতন "+num(r.fix)+" থেকে পুরনো মূল বেতন "+num(s.oldBasic)+" বিয়োগ = <b>"+num(r.gap)+"</b>। শুধু এই অংশ ধাপে ধাপে: ডিসেম্বর ২০২৬ পর্যন্ত "+num(r.p[0]*100)+"%, জুন ২০২৭ পর্যন্ত "+num(r.p[1]*100)+"%, ১ জুলাই ২০২৭ থেকে ১০০%।"
+           : "Fixed pay "+num(r.fix)+" minus old basic pay "+num(s.oldBasic)+" = <b>"+num(r.gap)+"</b>. Only this gap is staged: "+num(r.p[0]*100)+"% until December 2026, "+num(r.p[1]*100)+"% until June 2027, and 100% from 1 July 2027.");
+  if(r.inc>0) w.push(L ? "বার্ষিক বেতনবৃদ্ধি "+num(r.inc)+" পুরোটাই যোগ হয়, শতাংশ ছাড়া এবং একবারই: জুলাই থেকে ডিসেম্বর ২০২৬ এ "+num(s.oldBasic)+" + "+num(r.p[0]*r.gap)+" + "+num(r.inc)+" = <b>"+tk(r.b1)+"</b>।"
+           : "The increment of "+num(r.inc)+" is added in full, with no percentage and only once: July to December 2026 is "+num(s.oldBasic)+" + "+num(r.p[0]*r.gap)+" + "+num(r.inc)+" = <b>"+tk(r.b1)+"</b>.");
   $("work").innerHTML=w.map(function(x){return "<li>"+x+"</li>";}).join("");
   $("result").innerHTML=
     '<div class="hl"><span class="s">'+esc(T("res_new"))+'</span><span class="big">'+tk(r.N)+'</span></div>'+
