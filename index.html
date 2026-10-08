@@ -193,8 +193,31 @@ col.final{background:var(--green-soft)}
 .items{margin:14px 0 0;padding:0;list-style:none;columns:2;column-gap:28px;font-size:.93rem}
 .items li{display:flex;justify-content:space-between;gap:12px;padding:3px 0;border-bottom:1px dotted var(--line);break-inside:avoid}
 @media (max-width:560px){.items{columns:1}}
-.pdfbtn{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 13px;background:transparent;color:var(--green-ink);border:1px solid rgba(255,255,255,.55);border-radius:4px;cursor:pointer;font-size:.95rem}
-.pdfbtn:hover{background:rgba(255,255,255,.14)}
+.pdfbar{display:flex;justify-content:center}
+.pdfbtn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 26px;background:var(--green);color:#fff;border:0;border-radius:6px;cursor:pointer;font-size:1.05rem;font-weight:500;box-shadow:0 1px 3px rgba(14,90,67,.25)}
+.pdfbtn:hover{filter:brightness(1.08)}
+.pdfbtn[disabled]{opacity:.7;cursor:wait}
+@media (max-width:640px){.pdfbtn{width:100%}}
+/* the PDF copy: a fixed light A4 layout, built off screen from the results */
+.pdfdoc{--paper:#FFFFFF; --sheet:#FFFFFF; --ink:#14211B; --muted:#55665E; --line:#C9D6CE;
+  --green:#0E5A43; --green-ink:#FFFFFF; --green-soft:#DCEBE3; --green-mid:#7DB59E;
+  --red:#B3261E; --red-soft:#F8E3E0; --bar:#D5E0D9; --head:#E3EFE8;
+  width:714px;background:#fff;color:var(--ink);font-size:12px;line-height:1.5}
+.pdfdoc .pdfhead{border-bottom:2px solid var(--green);padding-bottom:8px;margin-bottom:10px}
+.pdfdoc .pdfhead h1{font-size:22px;color:var(--green)}
+.pdfdoc .pdfhead p{font-size:11px;color:var(--muted);margin-top:4px}
+.pdfdoc .out{display:block}
+.pdfdoc .out>*{margin-bottom:10px}
+.pdfdoc .block{padding:12px}
+.pdfdoc .block h2{font-size:16px}
+.pdfdoc .printsum{display:block;padding:0 0 4px;font-size:12px}
+.pdfdoc .printsum span{display:inline-block;margin-right:18px}
+.pdfdoc .ledger-scroll{display:block!important;overflow:visible}
+.pdfdoc .scalechart{display:block}
+.pdfdoc .pair{grid-template-columns:1fr 1fr}
+.pdfdoc .items{columns:2}
+.pdfdoc table{font-size:10.5px}
+.pdfdoc tr.delta td{color:var(--green)!important}
 .printsum{display:none}
 .scalechart{display:none}
 .scalechart h2{margin-bottom:10px}
@@ -218,7 +241,7 @@ col.final{background:var(--green-soft)}
   .mast-in{display:block;padding:0 0 10px}
   .mast h1{font-size:22px;color:#0E5A43}
   .mast p{font-size:11px}
-  .tools,.form,.out .check,.linkbtn{display:none!important}
+  .tools,.form,.out .check,.linkbtn,.pdfbar{display:none!important}
   .wrap{display:block;max-width:none;padding:0}
   .out{display:block}
   .out>*{margin-bottom:10px}
@@ -265,7 +288,6 @@ col.final{background:var(--green-soft)}
       <p data-t="sub"></p>
     </div>
     <div class="tools">
-      <button type="button" class="pdfbtn" id="pdfBtn"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 3.5v11M7.5 10l4.5 4.5 4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-t="pdf"></span></button>
       <button type="button" class="themebtn" id="themeBtn">
         <svg class="i-moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
         <svg class="i-sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -483,6 +505,7 @@ col.final{background:var(--green-soft)}
       <p class="warn" data-t="warn" style="margin-bottom:14px"></p>
       <ul id="notes"></ul>
     </div>
+    <div class="pdfbar"><button type="button" class="pdfbtn" id="pdfBtn"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 3.5v11M7.5 10l4.5 4.5 4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-t="pdf" id="pdfLabel"></span></button></div>
   </section>
 </main>
 
@@ -635,7 +658,7 @@ var STR={
 en:{
  title:"Pay Scale 2026 salary calculator",
  sub:"Works out your new basic pay, the staged rollout and your allowances, following the Services (Pay and Allowances) Order, 2026 (SRO No. 347, Bangladesh Gazette, 17 September 2026).",
- pdf:"Download PDF", h_scale:"New pay scale 2026", th_light:"Switch to light mode", th_dark:"Switch to dark mode",
+ pdf:"Download PDF", pdf_wait:"Preparing PDF…", h_scale:"New pay scale 2026", th_light:"Switch to light mode", th_dark:"Switch to dark mode",
  h_pay:"Your pay on 30 June 2026", l_grade:"Pay scale you draw", hint_grade:"If you hold a higher grade, selection grade or time scale, choose the scale you actually draw.",
  l_basic:"Basic pay on 30 June 2026", hint_fixed:"Filled in from the 2015 order. Change it if your payslip differs.",
  l_inc:"Add the annual increment of 1 July 2026", hint_inc:"Clause 9. A new joiner needs at least 6 months of qualifying service.",
@@ -682,7 +705,7 @@ en:{
 bn:{
  title:"জাতীয় বেতনস্কেল ২০২৬ বেতন হিসাব",
  sub:"চাকরি (বেতন ও ভাতাদি) আদেশ, ২০২৬ (এস. আর. ও. নং ৩৪৭, বাংলাদেশ গেজেট, ১৭ সেপ্টেম্বর ২০২৬) অনুযায়ী আপনার নতুন মূল বেতন, ধাপে ধাপে বাস্তবায়ন এবং ভাতা হিসাব করে।",
- pdf:"পিডিএফ ডাউনলোড", h_scale:"নতুন বেতনস্কেল ২০২৬", th_light:"লাইট মোডে যান", th_dark:"ডার্ক মোডে যান",
+ pdf:"পিডিএফ ডাউনলোড", pdf_wait:"পিডিএফ তৈরি হচ্ছে…", h_scale:"নতুন বেতনস্কেল ২০২৬", th_light:"লাইট মোডে যান", th_dark:"ডার্ক মোডে যান",
  h_pay:"৩০ জুন ২০২৬ তারিখে আপনার বেতন", l_grade:"আপনি যে বেতনস্কেলে বেতন পান", hint_grade:"উচ্চতর গ্রেড, সিলেকশন গ্রেড বা টাইম স্কেল পেয়ে থাকলে যে স্কেলে বাস্তবে বেতন পান সেটি বাছুন।",
  l_basic:"৩০ জুন ২০২৬ তারিখের মূল বেতন", hint_fixed:"২০১৫ সালের আদেশ অনুযায়ী বসানো হয়েছে। আপনার বেতন বিবরণীতে ভিন্ন হলে বদলে দিন।",
  l_inc:"১ জুলাই ২০২৬ এর বার্ষিক বেতনবৃদ্ধি যোগ করুন", hint_inc:"অনুচ্ছেদ ৯। নতুন যোগদানকারীর কোয়ালিফাইং চাকরি কমপক্ষে ৬ মাস হতে হবে।",
@@ -969,15 +992,52 @@ function setTheme(t){
   markTheme();
 }
 try{ var st=localStorage.getItem("ps26theme"); if(st==="light"||st==="dark") document.documentElement.setAttribute("data-theme",st); }catch(e){}
-/* Browser print keeps the embedded Bengali fonts shaped correctly, which a
-   JavaScript PDF library would not. The print stylesheet forces light colours;
-   the title becomes the suggested file name while the dialog is open. */
+/* Direct PDF download. html2pdf draws the results through the browser's own
+   text engine onto a canvas, so the Bengali stays shaped exactly as on
+   screen. The library (about 900 KB) is fetched only when the button is used.
+   If it cannot load, the browser's print dialog is the fallback. */
+var PDFLIB="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.2/dist/html2pdf.bundle.min.js";
+function loadPdfLib(){
+  return new Promise(function(ok,fail){
+    if(window.html2pdf) return ok();
+    var sc=document.createElement("script"); sc.src=PDFLIB; sc.onload=ok; sc.onerror=fail;
+    document.head.appendChild(sc);
+  });
+}
+function buildPdfDoc(){
+  var doc=document.createElement("div"); doc.className="pdfdoc"; doc.lang=document.documentElement.lang;
+  var head=document.createElement("div"); head.className="pdfhead";
+  head.appendChild(document.querySelector(".mast h1").cloneNode(true));
+  head.appendChild(document.querySelector(".mast p").cloneNode(true));
+  doc.appendChild(head);
+  var out=document.querySelector("section.out").cloneNode(true);
+  out.removeAttribute("aria-live");
+  Array.prototype.forEach.call(out.querySelectorAll(".check,.linkbtn,.periods,.notes,.pdfbar,[id]"),function(n){
+    if(n.id && !n.matches(".check,.linkbtn,.periods,.notes,.pdfbar")) n.removeAttribute("id"); else n.remove();
+  });
+  doc.appendChild(out);
+  return doc;
+}
 $("pdfBtn").addEventListener("click",function(){
-  var prevTitle=document.title, st=readState();
-  document.title="Pay Scale 2026 - Grade "+st.grade+" - "+st.oldBasic;
-  function restore(){ document.title=prevTitle; window.removeEventListener("afterprint",restore); }
-  window.addEventListener("afterprint",restore);
-  window.print();
+  var btn=this, st=readState(), name="Pay Scale 2026 - Grade "+st.grade+" - "+st.oldBasic+".pdf";
+  if(btn.disabled) return;
+  btn.disabled=true; $("pdfLabel").textContent=T("pdf_wait");
+  function done(){ btn.disabled=false; $("pdfLabel").textContent=T("pdf"); }
+  loadPdfLib().then(function(){
+    return window.html2pdf().set({
+      margin:[10,10,10,10], filename:name,
+      image:{type:"jpeg",quality:0.95},
+      html2canvas:{scale:2,backgroundColor:"#ffffff",scrollX:0,scrollY:0,logging:false},
+      jsPDF:{unit:"mm",format:"a4",orientation:"portrait"},
+      pagebreak:{mode:["css"],avoid:[".block",".printsum","tr"]}
+    }).from(buildPdfDoc()).save();
+  }).then(done,function(){
+    done();
+    var prev=document.title; document.title=name.replace(/\.pdf$/,"");
+    function restore(){ document.title=prev; window.removeEventListener("afterprint",restore); }
+    window.addEventListener("afterprint",restore);
+    window.print();
+  });
 });
 $("themeBtn").addEventListener("click",function(){ setTheme(currentTheme()==="dark"?"light":"dark"); });
 if(window.matchMedia){ try{ window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",markTheme); }catch(e){} }
