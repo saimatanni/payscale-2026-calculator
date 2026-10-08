@@ -193,6 +193,34 @@ col.final{background:var(--green-soft)}
 .items{margin:14px 0 0;padding:0;list-style:none;columns:2;column-gap:28px;font-size:.93rem}
 .items li{display:flex;justify-content:space-between;gap:12px;padding:3px 0;border-bottom:1px dotted var(--line);break-inside:avoid}
 @media (max-width:560px){.items{columns:1}}
+.pdfbtn{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 13px;background:transparent;color:var(--green-ink);border:1px solid rgba(255,255,255,.55);border-radius:4px;cursor:pointer;font-size:.95rem}
+.pdfbtn:hover{background:rgba(255,255,255,.14)}
+.printsum{display:none}
+@media print{
+  @page{size:A4;margin:12mm}
+  :root:root:root{
+    --paper:#FFFFFF; --sheet:#FFFFFF; --ink:#14211B; --muted:#55665E; --line:#C9D6CE;
+    --green:#0E5A43; --green-ink:#FFFFFF; --green-soft:#DCEBE3; --green-mid:#7DB59E;
+    --red:#B3261E; --red-soft:#F8E3E0; --bar:#D5E0D9; --head:#E3EFE8;
+  }
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{background:#fff;font-size:12px}
+  .mast{background:#fff;color:#14211B;border-bottom:2px solid #0E5A43}
+  .mast-in{display:block;padding:0 0 10px}
+  .mast h1{font-size:22px;color:#0E5A43}
+  .mast p{font-size:11px}
+  .tools,.form,.out .check,.linkbtn{display:none!important}
+  .wrap{display:block;max-width:none;padding:0}
+  .out{display:block}
+  .out>*{margin-bottom:10px}
+  .block{padding:12px;break-inside:avoid;page-break-inside:avoid}
+  .block h2{font-size:16px}
+  .printsum{display:block;padding:8px 0 10px;font-size:12px}
+  .printsum span{display:inline-block;margin-right:18px}
+  .ledger-scroll{display:block!important;overflow:visible}
+  .periods{display:none!important}
+  table{font-size:10.5px}
+}
 .pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px}
 .kv{display:grid;gap:6px;margin-top:4px}
 .kv div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px dotted var(--line);padding:3px 0}
@@ -226,6 +254,7 @@ col.final{background:var(--green-soft)}
       <p data-t="sub"></p>
     </div>
     <div class="tools">
+      <button type="button" class="pdfbtn" id="pdfBtn"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 3.5v11M7.5 10l4.5 4.5 4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-t="pdf"></span></button>
       <button type="button" class="themebtn" id="themeBtn">
         <svg class="i-moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
         <svg class="i-sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -397,6 +426,7 @@ col.final{background:var(--green-soft)}
   </section>
 
   <section class="out" aria-live="polite">
+    <div class="printsum" id="printSum"></div>
     <div class="block">
       <h2 data-t="h_fix"></h2>
       <ol class="work" id="work"></ol>
@@ -593,7 +623,7 @@ var STR={
 en:{
  title:"Pay Scale 2026 salary calculator",
  sub:"Works out your new basic pay, the staged rollout and your allowances, following the Services (Pay and Allowances) Order, 2026 (SRO No. 347, Bangladesh Gazette, 17 September 2026).",
- th_light:"Switch to light mode", th_dark:"Switch to dark mode",
+ pdf:"Download PDF", th_light:"Switch to light mode", th_dark:"Switch to dark mode",
  h_pay:"Your pay on 30 June 2026", l_grade:"Pay scale you draw", hint_grade:"If you hold a higher grade, selection grade or time scale, choose the scale you actually draw.",
  l_basic:"Basic pay on 30 June 2026", hint_fixed:"Filled in from the 2015 order. Change it if your payslip differs.",
  l_inc:"Add the annual increment of 1 July 2026", hint_inc:"Clause 9. A new joiner needs at least 6 months of qualifying service.",
@@ -620,7 +650,7 @@ en:{
  h_notes:"What this calculator assumes",
  warn:"This is an unofficial tool. Your official pay is fixed online in iBAS++ at ibas.finance.gov.bd or payfixation.gov.bd and approved by your accounts office (clause 32).",
  c0:"June 2026", c0s:"old scale", c1:"July to December 2026", c2:"January to June 2027", c3:"July to December 2027", c3s:"full pay plus increment", c4:"From January 2028", c4s:"new allowance rates",
- of_raise:"of the raise",
+ of_raise:"of the gap, plus increment",
  r_basic:"Basic pay", r_sp:"Special benefit", r_total:"Gross monthly total", r_gpf:"Provident fund (GPF)", r_net:"Take home after deductions", r_bf:"Benevolent fund", r_stamp:"Revenue stamp", r_tax:"Income tax", l_tax:"Income tax deducted from salary each month", hint_tax:"Enter your own amount. Leave 0 if no tax is taken. The same amount is used in every period, so raise it yourself if your tax goes up with the new pay.",
  r_loan:"Other loan instalments", r_home:"Home loan, equal to house rent", max:"max",
  l_home:"I have a home loan that takes my full house rent allowance", hint_home:"The deduction follows your house rent in each period, so it rises when the new house rent rate starts in January 2028.",
@@ -640,7 +670,7 @@ en:{
 bn:{
  title:"জাতীয় বেতনস্কেল ২০২৬ বেতন হিসাব",
  sub:"চাকরি (বেতন ও ভাতাদি) আদেশ, ২০২৬ (এস. আর. ও. নং ৩৪৭, বাংলাদেশ গেজেট, ১৭ সেপ্টেম্বর ২০২৬) অনুযায়ী আপনার নতুন মূল বেতন, ধাপে ধাপে বাস্তবায়ন এবং ভাতা হিসাব করে।",
- th_light:"লাইট মোডে যান", th_dark:"ডার্ক মোডে যান",
+ pdf:"পিডিএফ ডাউনলোড", th_light:"লাইট মোডে যান", th_dark:"ডার্ক মোডে যান",
  h_pay:"৩০ জুন ২০২৬ তারিখে আপনার বেতন", l_grade:"আপনি যে বেতনস্কেলে বেতন পান", hint_grade:"উচ্চতর গ্রেড, সিলেকশন গ্রেড বা টাইম স্কেল পেয়ে থাকলে যে স্কেলে বাস্তবে বেতন পান সেটি বাছুন।",
  l_basic:"৩০ জুন ২০২৬ তারিখের মূল বেতন", hint_fixed:"২০১৫ সালের আদেশ অনুযায়ী বসানো হয়েছে। আপনার বেতন বিবরণীতে ভিন্ন হলে বদলে দিন।",
  l_inc:"১ জুলাই ২০২৬ এর বার্ষিক বেতনবৃদ্ধি যোগ করুন", hint_inc:"অনুচ্ছেদ ৯। নতুন যোগদানকারীর কোয়ালিফাইং চাকরি কমপক্ষে ৬ মাস হতে হবে।",
@@ -667,7 +697,7 @@ bn:{
  h_notes:"এই হিসাবে যা ধরে নেওয়া হয়েছে",
  warn:"এটি একটি অনানুষ্ঠানিক টুল। আপনার বেতন দাপ্তরিকভাবে iBAS++ এ (ibas.finance.gov.bd বা payfixation.gov.bd) অনলাইনে নির্ধারিত হয় এবং হিসাবরক্ষণ অফিস তা অনুমোদন করে (অনুচ্ছেদ ৩২)।",
  c0:"জুন ২০২৬", c0s:"পুরনো স্কেল", c1:"জুলাই থেকে ডিসেম্বর ২০২৬", c2:"জানুয়ারি থেকে জুন ২০২৭", c3:"জুলাই থেকে ডিসেম্বর ২০২৭", c3s:"পূর্ণ বেতন ও বেতনবৃদ্ধি", c4:"জানুয়ারি ২০২৮ থেকে", c4s:"নতুন হারে ভাতা",
- of_raise:"বেতনবৃদ্ধির",
+ of_raise:"পার্থক্যের",
  r_basic:"মূল বেতন", r_sp:"বিশেষ সুবিধা", r_total:"মাসিক মোট (গ্রস)", r_gpf:"ভবিষ্য তহবিল (জিপিএফ)", r_net:"কর্তনের পর হাতে পাবেন", r_bf:"কল্যাণ তহবিল", r_stamp:"রেভিনিউ স্ট্যাম্প", r_tax:"আয়কর", l_tax:"প্রতি মাসে বেতন থেকে যে আয়কর কাটে", hint_tax:"নিজের অঙ্কটা লিখুন। কর না কাটলে ০ রাখুন। সব সময়ের জন্য একই অঙ্ক ধরা হয়েছে, তাই নতুন বেতনে কর বাড়লে অঙ্কটা নিজে বাড়িয়ে নিন।",
  r_loan:"অন্যান্য ঋণের কিস্তি", r_home:"গৃহ ঋণ, বাড়ি ভাড়ার সমান", max:"সর্বোচ্চ",
  l_home:"আমার গৃহ ঋণ আছে, যাতে পুরো বাড়ি ভাড়া ভাতা কেটে নেয়", hint_home:"প্রতিটি সময়ে যে বাড়ি ভাড়া পাবেন ঠিক সেটাই কাটা হবে, তাই জানুয়ারি ২০২৮ এ নতুন হারে বাড়ি ভাড়া বাড়লে কর্তনও বাড়বে।",
@@ -780,6 +810,10 @@ function render(){
   $("trainRow").hidden=!(isNaN(gi)||gi<=9);
   fillOldEstimates();
   var s=readState(), r=compute(s), L=lang==="bn";
+  function optText(id){ var e=$(id); return e.options[e.selectedIndex] ? e.options[e.selectedIndex].text : ""; }
+  $("printSum").innerHTML='<span>'+esc(T("l_grade"))+': <b>'+esc(optText("grade"))+'</b></span>'+
+    '<span>'+esc(T("l_basic"))+': <b>'+tk(s.oldBasic)+'</b></span>'+
+    '<span>'+esc(T("l_loc"))+': <b>'+esc(optText("loc"))+'</b></span>';
 
   /* working */
   var w=[];
@@ -838,7 +872,7 @@ function render(){
 
   /* ledger */
   var heads=[[T("c0"),T("c0s")],[T("c1"),num(r.p[0]*100)+"% "+T("of_raise")],[T("c2"),num(r.p[1]*100)+"% "+T("of_raise")],[T("c3"),T("c3s")],[T("c4"),T("c4s")]];
-  if(L){ heads[1][1]=T("of_raise")+" "+num(r.p[0]*100)+"%"; heads[2][1]=T("of_raise")+" "+num(r.p[1]*100)+"%"; }
+  if(L){ heads[1][1]=T("of_raise")+" "+num(r.p[0]*100)+"% + বেতনবৃদ্ধি"; heads[2][1]=T("of_raise")+" "+num(r.p[1]*100)+"% + বেতনবৃদ্ধি"; }
   var t='<colgroup><col><col><col><col><col><col class="final"></colgroup><thead><tr><th></th>';
   heads.forEach(function(h){ t+='<th scope="col">'+esc(h[0])+'<small>'+esc(h[1])+'</small></th>'; });
   t+='</tr></thead><tbody>';
@@ -914,6 +948,16 @@ function setTheme(t){
   markTheme();
 }
 try{ var st=localStorage.getItem("ps26theme"); if(st==="light"||st==="dark") document.documentElement.setAttribute("data-theme",st); }catch(e){}
+/* Browser print keeps the embedded Bengali fonts shaped correctly, which a
+   JavaScript PDF library would not. The print stylesheet forces light colours;
+   the title becomes the suggested file name while the dialog is open. */
+$("pdfBtn").addEventListener("click",function(){
+  var prevTitle=document.title, st=readState();
+  document.title="Pay Scale 2026 - Grade "+st.grade+" - "+st.oldBasic;
+  function restore(){ document.title=prevTitle; window.removeEventListener("afterprint",restore); }
+  window.addEventListener("afterprint",restore);
+  window.print();
+});
 $("themeBtn").addEventListener("click",function(){ setTheme(currentTheme()==="dark"?"light":"dark"); });
 if(window.matchMedia){ try{ window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",markTheme); }catch(e){} }
 markTheme();
